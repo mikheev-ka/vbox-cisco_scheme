@@ -1,11 +1,32 @@
+```markdown
 # Эмуляция виртуальной лаборатории VirtualBox в Cisco Packet Tracer
 
-Эмуляции виртуальной лаборатории (VirtualBox) в симуляторе Cisco Packet Tracer. 
+Данный репозиторий содержит конфигурации для эмуляции виртуальной лаборатории VirtualBox в симуляторе Cisco Packet Tracer. Стенд демонстрирует, как архитектура виртуальной лаборатории проецируется на реальное сетевое оборудование Cisco (пускай здесь в симуляторе).
 
 ![Схема лабораторной работы](vbox_cisco_scheme.png)
 
+## Адресация
 
+**Dlink_my_router (ISR4331)**
+*   **WAN (Gi0/0/1):** 79.1.1.2/24, шлюз 79.1.1.1
+*   **LAN (Gi0/0/0):** 192.168.24.1/24
 
+**Vbox_NAT (ISR4331)**
+*   **WAN (Gi0/0/1):** 192.168.24.50/24, шлюз 192.168.24.1
+*   **LAN (Gi0/0/0):** 10.0.2.2/24
+
+**DC01 (ISR4331) - Шлюз, DHCP, DNS**
+*   **WAN (Gi0/0/1):** 10.0.2.15/24, шлюз 10.0.2.2
+*   **LAN (Gi0/0/0):** 192.168.200.10/24
+
+**HostOnly_Switch (Multilayer Switch 3560)**
+*   **VLAN 1:** 192.168.200.1/24, шлюз 192.168.200.10
+
+**Клиенты (Server-PT)**
+*   **Адрес:** Получают по DHCP из пула 192.168.200.30 - 254
+*   **Шлюз и DNS:** 192.168.200.10
+
+---
 
 ## Конфигурации устройств
 
@@ -39,7 +60,7 @@ ip nat inside source list 1 interface GigabitEthernet0/0/1 overload
 ip route 0.0.0.0 0.0.0.0 79.1.1.1
 
 end
-write memory
+copy running-config startup-config
 ```
 
 ### 2. Vbox_NAT (ISR4331)
@@ -72,7 +93,7 @@ ip nat inside source list 1 interface GigabitEthernet0/0/1 overload
 ip route 0.0.0.0 0.0.0.0 192.168.24.1
 
 end
-write memory
+copy running-config startup-config
 ```
 
 ### 3. DC01 (ISR4331)
@@ -119,7 +140,7 @@ ip dhcp pool LAN_CLIENTS
  exit
 
 end
-write memory
+copy running-config startup-config
 ```
 
 ### 4. HostOnly_Switch (Multilayer Switch 3560)
@@ -141,7 +162,7 @@ interface vlan 1
 ip default-gateway 192.168.200.10
 
 end
-write memory
+copy running-config startup-config
 ```
 
 ### 5. Нижние коммутаторы (Switch3, Switch4, Switch5)
